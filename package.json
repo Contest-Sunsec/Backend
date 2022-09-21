@@ -15,7 +15,8 @@
     },
     "scripts": {
         "test": "jest",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "start": "nodemon --exec ts-node src/index.ts"
     },
     "lint-staged": {
         "**/*": "prettier --write --ignore-unknown"
