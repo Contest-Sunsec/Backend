@@ -1,8 +1,5 @@
-import {
-    DataTypes, 
-    Model,
-} from 'sequelize';
-import { sequelize } from './index'
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from './index';
 import type { UserAttributes } from '../types/user';
 
 export class Users extends Model<UserAttributes> {
@@ -18,8 +15,7 @@ export class Users extends Model<UserAttributes> {
 Users.init(
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.UUIDV4,
             primaryKey: true,
         },
         name: {
@@ -33,12 +29,11 @@ Users.init(
         password: {
             type: DataTypes.STRING,
             allowNull: false,
-        }
+        },
     },
     {
         modelName: 'users',
         tableName: 'users',
         sequelize,
     }
-)
-
+);
