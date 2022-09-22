@@ -1,7 +1,8 @@
-export interface User {
+export interface UserAttributes {
+    id: string;
     name: string;
     email: string;
-    accessToken: string;
+    password: string;
 }
 
-export default User;
+export default UserAttributes;
