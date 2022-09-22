@@ -1,5 +1,7 @@
+import { AbstractDataType } from 'sequelize';
+
 export interface UserAttributes {
-    id: string;
+    id: AbstractDataType;
     name: string;
     email: string;
     password: string;
