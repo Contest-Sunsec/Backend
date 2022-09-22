@@ -1,12 +1,23 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { sequelize } from './models';
 
-// eslint-disable-next-line require-jsdoc
+const PORT = process.env.SERVICE_PORT || 3000;
+
 async function bootstrap() {
     const app = express();
     dotenv.config();
-    app.listen(process.env.SERVICE_PORT, async () => {
-        console.log(`Server is running on port ${process.env.SERVICE_PORT}`);
+    app.listen(PORT, async () => {
+        console.log(`Server is running on port ${PORT}`);
+
+        await sequelize
+            .sync({ force: true })
+            .then(async () => {
+                console.log('Database connected');
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     });
 }
 
