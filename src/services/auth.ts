@@ -4,7 +4,7 @@ import { validateEmail, validatePassword } from '../validation/auth';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import type { serviceReturn } from '../types/service';
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 import { JWT_SECRET } from '../config/keys';
 import { nodeMailer } from '../config/config';
 import UserAttributes from '../types/user';
@@ -53,9 +53,12 @@ const registerService = async (
             return returnData;
         }
 
-        const id = uuidv4()
-        console.log(id)
-        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+        const id = uuidv4();
+        console.log(id);
+        const hashedPassword = crypto
+            .createHash('sha256')
+            .update(password)
+            .digest('hex');
 
         const newUser = await Users.create({
             id,
@@ -67,8 +70,8 @@ const registerService = async (
         returnData.status = 200;
         returnData.message = '회원가입에 성공했어요';
         returnData.responseData = {
-            id: newUser.id
-        }
+            id: newUser.id,
+        };
         console.log(newUser);
 
         return returnData;
@@ -80,10 +83,7 @@ const registerService = async (
     }
 };
 
-const loginService = async (
-    email: string,
-    password: string
-) => {
+const loginService = async (email: string, password: string) => {
     const returnData: serviceReturn = {
         status: 500,
         message: 'Internal Server Error',
@@ -115,7 +115,10 @@ const loginService = async (
             return returnData;
         }
 
-        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+        const hashedPassword = crypto
+            .createHash('sha256')
+            .update(password)
+            .digest('hex');
 
         if (user.password !== hashedPassword) {
             returnData.status = 400;
@@ -138,6 +141,7 @@ const loginService = async (
         returnData.message = '로그인에 성공했어요';
         returnData.responseData = {
             token,
+            user,
         };
 
         return returnData;
@@ -146,15 +150,13 @@ const loginService = async (
         returnData.status = 500;
         returnData.message = '서버 에러가 발생했어요';
         returnData.responseData = {
-            err
-        }
+            err,
+        };
         return returnData;
     }
 };
 
-const forgotPasswordService = async (
-    email: string
-) => {
+const forgotPasswordService = async (email: string) => {
     const returnData: serviceReturn = {
         status: 500,
         message: 'Internal Server Error',
@@ -207,7 +209,7 @@ const forgotPasswordService = async (
                 <h3 style="color: #07B1BC;">아래 링크로 이동해주세요</h3>
                 <p>${process.env.FRONTEND_URL}/reset-password/${token}</p>
             `,
-        })
+        });
 
         returnData.status = 200;
         returnData.message = '비밀번호 재설정 링크를 이메일로 보냈어요';
@@ -224,10 +226,7 @@ const forgotPasswordService = async (
     }
 };
 
-const resetPasswordService = async (
-    password: string,
-    token: string
-) => {
+const resetPasswordService = async (password: string, token: string) => {
     const returnData: serviceReturn = {
         status: 500,
         message: 'Internal Server Error',
@@ -267,15 +266,21 @@ const resetPasswordService = async (
             return returnData;
         }
 
-        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+        const hashedPassword = crypto
+            .createHash('sha256')
+            .update(password)
+            .digest('hex');
 
-        await Users.update({
-            password: hashedPassword,
-        }, {
-            where: {
-                id: (decoded as UserAttributes).id,
+        await Users.update(
+            {
+                password: hashedPassword,
             },
-        });
+            {
+                where: {
+                    id: (decoded as UserAttributes).id,
+                },
+            }
+        );
 
         returnData.status = 200;
         returnData.message = '비밀번호를 재설정했어요';
@@ -288,4 +293,50 @@ const resetPasswordService = async (
     }
 };
 
-export { registerService, loginService, forgotPasswordService, resetPasswordService };
+const getUserDataService = async (token: string) => {
+    const returnData: serviceReturn = {
+        status: 500,
+        message: 'Internal Server Error',
+        responseData: {},
+    };
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        if (!decoded) {
+            returnData.status = 401;
+            returnData.message = '유효하지 않은 토큰이에요';
+            return returnData;
+        }
+
+        const user = await Users.findOne({
+            where: {
+                id: (decoded as UserAttributes).id,
+            },
+            attributes: {
+                exclude: ['password'],
+            },
+        });
+
+        returnData.status = 200;
+        returnData.message = '사용자 정보를 가져왔어요';
+        returnData.responseData = {
+            user,
+        };
+
+        return returnData;
+    } catch (err) {
+        console.log(err);
+        returnData.status = 400;
+        returnData.message = '토큰이 만료되었어요';
+        return returnData;
+    }
+};
+
+export {
+    registerService,
+    loginService,
+    forgotPasswordService,
+    resetPasswordService,
+    getUserDataService,
+};
