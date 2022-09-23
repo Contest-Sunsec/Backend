@@ -1,4 +1,6 @@
 import * as dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+
 dotenv.config();
 const env = process.env;
 
@@ -30,3 +32,22 @@ export const config = {
         dialect: 'mysql',
     },
 };
+
+export const nodeMailer = {
+    sendMail: function (option: Object) {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+            from: env.EMAIL,
+            ...option
+        };
+
+        return transporter.sendMail(mailOptions);
+    }
+}
