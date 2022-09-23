@@ -1,17 +1,21 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { sequelize } from './models';
+import router from './routes';
 
+const app = express();
 const PORT = process.env.SERVICE_PORT || 3000;
 
+app.use(express.json());
+app.use('/', router);
+
 async function bootstrap() {
-    const app = express();
     dotenv.config();
     app.listen(PORT, async () => {
         console.log(`Server is running on port ${PORT}`);
 
         await sequelize
-            .sync({ force: true })
+            .sync({ force: false })
             .then(async () => {
                 console.log('Database connected');
             })
