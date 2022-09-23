@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config').config[env];
@@ -12,5 +12,6 @@ export const sequelize = new Sequelize(
     {
         host: config.host,
         dialect: config.dialect,
+        models: [__dirname + "/**/*.model.ts"],
     },
 );
