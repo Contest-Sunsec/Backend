@@ -207,7 +207,7 @@ const forgotPasswordService = async (email: string) => {
                 <p>아래 링크를 클릭하면 비밀번호를 재설정할 수 있어요</p>
                 <br/>
                 <h3 style="color: #07B1BC;">아래 링크로 이동해주세요</h3>
-                <p>${process.env.FRONTEND_URL}/reset-password/${token}</p>
+                <p>${process.env.FRONTEND_URL}/reset-password?token=${token}</p>
             `,
         });
 
